@@ -7,12 +7,17 @@ class User extends Model {
   public email!: string;
   public mobile!: string;
   public password!: string;
+  public position!: string;
+  public totalDirect!: number;
+  public activeDirect!: number;
+  public totalTeam!: number;
+  public activeTeam!: number;
   public filename?: string;
   public filepath?: string;
   public mimetype?: string;
-  public referralCode?: string; // Optional field
-  public parentUserId?: number | null; // Optional foreign key reference
-  public otp?: string; // Optional OTP field
+  public referralCode?: string;
+  public parentUserId?: number | null;
+  public otp?: string;
   public emailVerified!: boolean;
   public status!: string;
   public isAdmin!: boolean;
@@ -31,16 +36,40 @@ User.init({
   email: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
+    unique: true, // Emails are typically unique
   },
   mobile: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
+    unique: true, // Ensures mobile numbers are unique
   },
   password: {
     type: DataTypes.STRING,
     allowNull: false,
+  },
+  position: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  totalDirect: {
+    type: DataTypes.INTEGER, // Changed from DataTypes.NUMBER
+    allowNull: true,
+    defaultValue: 0,
+  },
+  activeDirect: {
+    type: DataTypes.INTEGER, // Changed from DataTypes.NUMBER
+    allowNull: true,
+    defaultValue: 0,
+  },
+  totalTeam: {
+    type: DataTypes.INTEGER, // Changed from DataTypes.NUMBER
+    allowNull: true,
+    defaultValue: 0,
+  },
+  activeTeam: {
+    type: DataTypes.INTEGER, // Changed from DataTypes.NUMBER
+    allowNull: true,
+    defaultValue: 0,
   },
   otp: {
     type: DataTypes.STRING,
@@ -48,7 +77,7 @@ User.init({
   },
   emailVerified: {
     type: DataTypes.BOOLEAN,
-    defaultValue: false,
+    defaultValue: false, // Typically email is unverified by default
   },
   filename: {
     type: DataTypes.STRING,
@@ -66,7 +95,7 @@ User.init({
     type: DataTypes.INTEGER.UNSIGNED,
     allowNull: true,
     references: {
-      model: 'users', // This should refer to the table name, not the model
+      model: 'users',
       key: 'userId',
     },
     onDelete: 'SET NULL',
@@ -75,12 +104,12 @@ User.init({
   referralCode: {
     type: DataTypes.STRING,
     allowNull: true,
-    unique: true,
+    unique: true, // Ensures referral codes are unique
   },
   status: {
     type: DataTypes.STRING,
     allowNull: true,
-    defaultValue: "pending" // Fixed typo here
+    defaultValue: 'pending', // Corrected typo
   },
   isAdmin: {
     type: DataTypes.BOOLEAN,

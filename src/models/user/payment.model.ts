@@ -6,7 +6,18 @@ class Payment extends Model {
   public payId!: number;
   public userId!: number;
   public userName!: string;
-  public earnAmount!: number;
+  public earnWallet!: number;
+  public depositWallet!: number;
+  public referralEarning!: number;
+  public selfInvestment!: number;
+  public levelEarning!: number; // Corrected from 'lavalEarning'
+  public aiEarning!: number;
+  public royalty!: number;
+  public totalWithdraw!: number;
+  public dailyLevelEarning!: number;
+  public leadershipEarning!: number;
+  public oneTimeEarning!: number;
+  public starEarning!: number;
   public totalAmount!: number;
   public paymentMethod!: string;
   public transactionId!: string;
@@ -23,10 +34,10 @@ Payment.init({
     primaryKey: true,
   },
   userId: {
-    type: DataTypes.INTEGER.UNSIGNED, // Make sure this matches the User model
+    type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false,
     references: {
-      model: 'users', // This should refer to the table name, not the model
+      model: 'users', // This should refer to the correct table name in your DB
       key: 'userId',
     },
     onDelete: 'CASCADE',
@@ -36,21 +47,78 @@ Payment.init({
     type: DataTypes.STRING,
     allowNull: false,
   },
-  earnAmount: {
-    type: DataTypes.FLOAT,
-    allowNull: false,
+  earnWallet: {
+    type: DataTypes.DECIMAL(10, 2), // Use DECIMAL for better precision with money
+    allowNull: true,
+    defaultValue: 0,
+  },
+  depositWallet: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: 0,
+  },
+  referralEarning: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: 0,
+  },
+  selfInvestment: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: 0,
+  },
+  levelEarning: { // Corrected name from lavalEarning to levelEarning
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: 0,
+  },
+  aiEarning: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: 0,
+  },
+  royalty: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: 0,
+  },
+  totalWithdraw: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: 0,
+  },
+  dailyLevelEarning: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: 0,
+  },
+  leadershipEarning: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: 0,
+  },
+  oneTimeEarning: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: 0,
+  },
+  starEarning: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: 0,
   },
   totalAmount: {
-    type: DataTypes.FLOAT,
-    allowNull: false,
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: 0,
   },
   paymentMethod: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   transactionId: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   status: {
     type: DataTypes.STRING,
@@ -67,12 +135,12 @@ Payment.init({
   mimetype: {
     type: DataTypes.STRING,
     allowNull: true,
-  }
+  },
 }, {
   sequelize,
   modelName: 'Payment',
   tableName: 'payments',
-  timestamps: true, // Optional: if you want createdAt and updatedAt
+  timestamps: true,
 });
 
 export default Payment;
