@@ -19,8 +19,10 @@ class Payment extends Model {
   public oneTimeEarning!: number;
   public starEarning!: number;
   public totalAmount!: number;
-  public paymentMethod!: string;
-  public transactionId!: string;
+  public plan!: string;
+  public commission!: string;
+  public planStartDate!: string;
+  public planEndDate!: string;
   public status!: string;
   public filename?: string;
   public filepath?: string;
@@ -112,13 +114,23 @@ Payment.init({
     allowNull: true,
     defaultValue: 0,
   },
-  paymentMethod: {
+  plan: {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  transactionId: {
+  commission: {
     type: DataTypes.STRING,
     allowNull: true,
+  },
+  planStartDate:{
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: Date.now
+  },
+  planEndDate:{
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: Date.now
   },
   status: {
     type: DataTypes.STRING,
