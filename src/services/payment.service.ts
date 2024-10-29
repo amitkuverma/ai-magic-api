@@ -21,16 +21,7 @@ class PaymentService {
     return await Payment.findAll();
   }
 
-  async createPayment(data: {
-    userId: number;
-    userName: string;
-    earnAmount: number;
-    totalAmount: number;
-    paymentMethod: string;
-    transactionId: string;
-    status: string;
-    receipt?: string;
-  }) {
+  async createPayment(data:any) {
     return await Payment.create(data);
   }
 

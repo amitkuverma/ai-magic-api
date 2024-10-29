@@ -148,14 +148,11 @@ export default class UserService {
 
   static async getReferralChain(userId: number): Promise<{ user: User; referrals: User[] }[]> {
     const referralChain: { user: User; referrals: User[] }[] = [];
-    let currentUser: any = await User.findByPk(userId, {
-      attributes: ['userId', 'name', 'email', 'mobile', 'emailVerified', 'referralCode', 'createdAt', 'status', 'filepath', 'filename'],
-    });
+    let currentUser: any = await User.findByPk(userId);
 
     while (currentUser) {
       const referrals = await User.findAll({
-        where: { parentUserId: currentUser.userId },
-        attributes: ['userId', 'name', 'email', 'mobile', 'emailVerified', 'referralCode', 'createdAt', 'status', 'filepath', 'filename'],
+        where: { parentUserId: currentUser.userId }
       });
 
       referralChain.push({ user: currentUser, referrals });
@@ -166,25 +163,52 @@ export default class UserService {
     return referralChain;
   }
 
-  static async getUserReferralChainList(userId: number): Promise<{ user: User; referrals: any[] }> {
-    async function fetchChain(currentUser: User): Promise<{ user: User; referrals: any[] }> {
-      if (!currentUser) null;
 
-      const referrals = await User.findAll({
-        where: { parentUserId: currentUser.userId },
-        attributes: ['userId', 'name', 'email', 'mobile', 'emailVerified', 'referralCode', 'createdAt', 'status', 'filepath', 'filename'],
-      });
-
-      const referralChain = await Promise.all(referrals.map(async (referral) => await fetchChain(referral)));
-
-      return { user: currentUser, referrals: referralChain };
-    }
-
-    const initialUser: any = await User.findByPk(userId, {
-      attributes: ['userId', 'name', 'email', 'mobile', 'emailVerified', 'referralCode', 'createdAt', 'status', 'filepath', 'filename'],
-    });
-    return await fetchChain(initialUser);
+  static async getUserReferralChainList(userId: number): Promise<{ user: User | null; referrals: User[] }> {
+      async function fetchChain(currentUser: User | null): Promise<{ user: User; referrals: User[] }> {
+          if (!currentUser) {
+              // Return a valid structure even when the user is null
+              return { user: {} as User, referrals: [] }; // Return an empty User object as a placeholder
+          }
+  
+          const referrals: User[] = await User.findAll({
+              where: { parentUserId: currentUser.userId }
+          });
+  
+          // Fetch referral chains for each referral and flatten the results
+          const referralChains = await Promise.all(referrals.map(fetchChain));
+  
+          // Flatten the referral chains into a single array
+          const allReferrals: User[] = referralChains.reduce((acc, chain) => {
+              acc.push(chain.user); // Add the current user to the flat array
+              return acc.concat(chain.referrals); // Concatenate the nested referrals
+          }, [] as User[]);
+  
+          return { user: currentUser, referrals: allReferrals };
+      }
+  
+      const initialUser: User | null = await User.findByPk(userId);
+      return await fetchChain(initialUser);
   }
+  
+
+
+  // static async getUserReferralChainList(userId: number): Promise<{ user: User; referrals: any[] }> {
+  //   async function fetchChain(currentUser: User): Promise<{ user: User; referrals: any[] }> {
+  //     if (!currentUser) null;
+
+  //     const referrals = await User.findAll({
+  //       where: { parentUserId: currentUser.userId }
+  //     });
+
+  //     const referralChain = await Promise.all(referrals.map(async (referral) => await fetchChain(referral)));
+
+  //     return { user: currentUser, referrals: referralChain };
+  //   }
+
+  //   const initialUser: any = await User.findByPk(userId);
+  //   return await fetchChain(initialUser);
+  // }
 
   static async getReferralChildrenTaskCompleted(userId: number): Promise<{
     user: User | null;
@@ -206,8 +230,7 @@ export default class UserService {
 
       // Fetch immediate referrals for the current user
       const referrals = await User.findAll({
-        where: { parentUserId: currentUser.userId },
-        attributes: ['userId', 'name', 'email', 'mobile', 'emailVerified', 'referralCode', 'createdAt', 'status', 'filepath', 'filename'],
+        where: { parentUserId: currentUser.userId }
       });
 
       // Recursively fetch each referral's chain
@@ -227,9 +250,7 @@ export default class UserService {
     }
 
     // Fetch the initial user to start the chain
-    const initialUser: User | null = await User.findByPk(userId, {
-      attributes: ['userId', 'name', 'email', 'mobile', 'emailVerified', 'referralCode', 'createdAt', 'status', 'filepath', 'filename'],
-    });
+    const initialUser: User | null = await User.findByPk(userId);
 
     if (!initialUser) throw new Error('User not found');
 

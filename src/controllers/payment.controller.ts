@@ -29,18 +29,8 @@ class PaymentController {
   // Create a new payment
   async createPayment(req: Request, res: Response) {
     try {
-      const { userId, userName, earnAmount, totalAmount, paymentMethod, transactionId, status } = req.body;
-
       // Create new payment
-      const newPayment = await PaymentService.createPayment({
-        userId,
-        userName,
-        earnAmount,
-        totalAmount,
-        paymentMethod,
-        transactionId,
-        status,
-      });
+      const newPayment = await PaymentService.createPayment(req.body);
 
       return res.status(201).json({
         message: 'Payment created successfully',
