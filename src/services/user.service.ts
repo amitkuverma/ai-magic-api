@@ -25,27 +25,6 @@ export default class UserService {
     });
   }
 
-  static async get7thParentUserDetails(userId: number, depth: number = 0): Promise<User | null> {
-    // Base case: if we've reached beyond 7 levels, return null
-    if (depth > 7) return null;
-
-    // Find the current user by userId
-    const currentUser = await User.findOne({ where: { userId } });
-
-    // If no user is found, return null
-    if (!currentUser) return null;
-
-    // If we have reached the 7th level, return the user details
-    if (depth === 7) {
-      return currentUser; // Return the 7th parent user details
-    }
-
-    // If the current user has no parent (parentUserId is null), stop the recursion
-    if (!currentUser.parentUserId) return null;
-
-    // Recursive call to find the next parent user, incrementing the depth
-    return await this.get7thParentUserDetails(currentUser.parentUserId, depth + 1);
-  }
 
 
 
@@ -61,20 +40,6 @@ export default class UserService {
     }
 
     if (referral) {
-      const parentUsers: any = await this.get7thParentUserDetails(userId);
-      if (parentUsers) {
-        const referrralList = await UserService.getReferralChildrenTaskCompleted(parentUsers.parentUserId);
-        const userSeven = referrralList.referrals?.map((res: any) => res.liveReferralCount == 7);
-        if (userSeven.includes(true)) {
-          const parentReferral = await Payment.findOne({ where: { userId: referrralList.user?.userId } });
-          if (parentReferral) {
-            parentReferral.totalAmount += 100;
-            await parentReferral.save();
-          }
-
-        }
-
-      }
       referral.totalAmount += 100;
       await referral.save();
     }
@@ -120,19 +85,33 @@ export default class UserService {
   private static async registerUserWithReferral(data: UserRegistrationData) {
     const { name, email, mobile, password, referralCode } = data;
     const hashedPassword = await hashPassword(password);
-    let parentUserId: number | null = null;
+    let parentUserId: string | null = null; // Use string since userId is a string
 
     if (referralCode) {
       const referrer: any = await User.findOne({ where: { referralCode } });
       if (referrer) {
-        parentUserId = referrer.userId;
-        const referrralList = await UserService.getReferralChildrenTaskCompleted(referrer.userId);
-        const userSeven = referrralList.referrals?.map((res: any) => { res.liveReferralCount === 6 });
-        console.log(userSeven)
+        parentUserId = referrer.userId; // Assuming userId is a string
       }
     }
 
+    // Generate the userId here
+    const lastUser = await User.findOne({
+      order: [['userId', 'DESC']],
+    });
+
+    let newIdNumber = 1; // Default to 1 if no users exist
+    if (lastUser && lastUser.userId) {
+      // Extract numeric part from the last user’s ID (e.g., "AI0001" -> 1)
+      const lastIdNumber = parseInt(lastUser.userId.slice(2), 10);
+      newIdNumber = lastIdNumber + 1;
+    }
+
+    // Format the new `userId` with "AI" prefix and 4-digit zero padding
+    const userId = `AI${newIdNumber.toString().padStart(4, '0')}`;
+    console.log(`Generated userId for new user: ${userId}`);
+
     const newUser = await User.create({
+      userId, // Assign the generated userId here
       name,
       email,
       mobile,
@@ -141,12 +120,10 @@ export default class UserService {
       referralCode: await this.generateUniqueReferralCode(),
     });
 
-    await newUser.save();
-
     return newUser;
   }
 
-  static async getReferralChain(userId: number): Promise<{ user: User; referrals: User[] }[]> {
+  static async getReferralChain(userId: any): Promise<{ user: User; referrals: User[] }[]> {
     const referralChain: { user: User; referrals: User[] }[] = [];
     let currentUser: any = await User.findByPk(userId);
 
@@ -164,36 +141,36 @@ export default class UserService {
   }
 
 
-  static async getUserReferralChainList(userId: number): Promise<{ user: User | null; referrals: User[] }> {
-      async function fetchChain(currentUser: User | null): Promise<{ user: User; referrals: User[] }> {
-          if (!currentUser) {
-              // Return a valid structure even when the user is null
-              return { user: {} as User, referrals: [] }; // Return an empty User object as a placeholder
-          }
-  
-          const referrals: User[] = await User.findAll({
-              where: { parentUserId: currentUser.userId }
-          });
-  
-          // Fetch referral chains for each referral and flatten the results
-          const referralChains = await Promise.all(referrals.map(fetchChain));
-  
-          // Flatten the referral chains into a single array
-          const allReferrals: User[] = referralChains.reduce((acc, chain) => {
-              acc.push(chain.user); // Add the current user to the flat array
-              return acc.concat(chain.referrals); // Concatenate the nested referrals
-          }, [] as User[]);
-  
-          return { user: currentUser, referrals: allReferrals };
+  static async getUserReferralChainList(userId: any): Promise<{ user: User | null; referrals: User[] }> {
+    async function fetchChain(currentUser: User | null): Promise<{ user: User; referrals: User[] }> {
+      if (!currentUser) {
+        // Return a valid structure even when the user is null
+        return { user: {} as User, referrals: [] }; // Return an empty User object as a placeholder
       }
-  
-      const initialUser: User | null = await User.findByPk(userId);
-      return await fetchChain(initialUser);
+
+      const referrals: User[] = await User.findAll({
+        where: { parentUserId: currentUser.userId }
+      });
+
+      // Fetch referral chains for each referral and flatten the results
+      const referralChains = await Promise.all(referrals.map(fetchChain));
+
+      // Flatten the referral chains into a single array
+      const allReferrals: User[] = referralChains.reduce((acc, chain) => {
+        acc.push(chain.user); // Add the current user to the flat array
+        return acc.concat(chain.referrals); // Concatenate the nested referrals
+      }, [] as User[]);
+
+      return { user: currentUser, referrals: allReferrals };
+    }
+
+    const initialUser: User | null = await User.findByPk(userId);
+    return await fetchChain(initialUser);
   }
-  
 
 
-  // static async getUserReferralChainList(userId: number): Promise<{ user: User; referrals: any[] }> {
+
+  // static async getUserReferralChainList(userId: any): Promise<{ user: User; referrals: any[] }> {
   //   async function fetchChain(currentUser: User): Promise<{ user: User; referrals: any[] }> {
   //     if (!currentUser) null;
 
@@ -210,7 +187,7 @@ export default class UserService {
   //   return await fetchChain(initialUser);
   // }
 
-  static async getReferralChildrenTaskCompleted(userId: number): Promise<{
+  static async getReferralChildrenTaskCompleted(userId: any): Promise<{
     user: User | null;
     referrals: any[],
     liveReferralCount: number // Total live referral count
@@ -259,7 +236,7 @@ export default class UserService {
 
   }
 
-  static async deleteUser(id: number) {
+  static async deleteUser(id: any) {
     const coin = await User.findByPk(id);
     if (coin) {
       await coin.destroy();

@@ -46,7 +46,7 @@ class PaymentController {
     try {
       const { userId } = req.params;
       // Ensure that the payment exists before attempting to update
-      const existingPayment = await PaymentService.findPaymentById(Number(userId));
+      const existingPayment = await PaymentService.findPaymentById(userId);
       if (!existingPayment) {
         return res.status(404).json({
           message: 'Payment not found for this user. Use create endpoint instead.',
@@ -69,7 +69,7 @@ class PaymentController {
   async getPaymentsByUserId(req: Request, res: Response) {
     const { userId } = req.params;
     try {
-      const payments = await PaymentService.findPaymentByUserId(Number(userId));
+      const payments = await PaymentService.findPaymentByUserId(userId);
       res.status(200).json(payments);
     } catch (error: any) {
       res.status(500).json({ message: 'Failed to retrieve payments', error: error.message });

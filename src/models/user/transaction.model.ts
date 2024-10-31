@@ -1,17 +1,15 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../../config/database';
-import User from './user.model'; // Ensure the import path is correct
 
 class Transaction extends Model {
   public transId!: number;
-  public userId!: number;
+  public userId!: string; // Updated to string
   public userName!: string;
-  public receiverName!: string;
+  public receiverName?: string; // Made optional
   public paymentType!: string;
-  public transactionId!: string;
-  public transactionAmount!: string;
+  public transactionId?: string; // Made optional
+  public transactionAmount?: string; // Made optional
   public status!: string;
-  public receipt?: string;
   public filename?: string;
   public filepath?: string;
   public mimetype?: string;
@@ -24,10 +22,10 @@ Transaction.init({
     primaryKey: true,
   },
   userId: {
-    type: DataTypes.INTEGER.UNSIGNED, // Matches the User model
+    type: DataTypes.STRING, // Match this with the users table
     allowNull: false,
     references: {
-      model: 'users', // This should refer to the table name, not the model name
+      model: 'users', // Refers to the users table
       key: 'userId',
     },
     onDelete: 'CASCADE',
@@ -73,7 +71,7 @@ Transaction.init({
 }, {
   sequelize,
   modelName: 'Transaction',
-  tableName: 'transactions', // Ensure the correct table name
+  tableName: 'transactions',
   timestamps: true, // Optional: if you want createdAt and updatedAt fields
 });
 

@@ -4,7 +4,7 @@ import User from './user.model'; // Ensure the import path is correct
 
 class AccountDetails extends Model {
   public accId!: number;
-  public userId!: number;
+  public userId!: string; // Change to string if userId is VARCHAR in users
   public userName!: string;
   public bankName!: string;
   public branchName!: string;
@@ -14,6 +14,7 @@ class AccountDetails extends Model {
   public ifscCode!: string;
 }
 
+// Initialize the AccountDetails model
 AccountDetails.init({
   accId: {
     type: DataTypes.INTEGER,
@@ -21,10 +22,10 @@ AccountDetails.init({
     primaryKey: true,
   },
   userId: {
-    type: DataTypes.INTEGER.UNSIGNED,
+    type: DataTypes.STRING, // Change to STRING to match User model if userId is VARCHAR
     allowNull: false,
     references: {
-      model: 'users',
+      model: User, // Reference to the User model directly
       key: 'userId',
     },
     onDelete: 'CASCADE',

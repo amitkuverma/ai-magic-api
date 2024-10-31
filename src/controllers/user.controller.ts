@@ -21,7 +21,7 @@ export default class UserController {
   static async getReferralChain(req: Request, res: Response) {
     try {
       const { userId } = req.params; // Get the userId from request params
-      const referralChain = await UserService.getReferralChain(Number(userId));
+      const referralChain = await UserService.getReferralChain(userId);
 
       if (!referralChain.length) {
         return res.status(404).json({ message: "No referral chain found" });
@@ -36,7 +36,7 @@ export default class UserController {
   static async getUserReferralChainList(req: Request, res: Response) {
     try {
       const { userId } = req.params; // Get the userId from request params
-      const referralChain = await UserService.getUserReferralChainList(Number(userId));
+      const referralChain = await UserService.getUserReferralChainList(userId);
 
       if (!referralChain) {
         return res.status(404).json({ message: "No referral chain found" });
@@ -52,7 +52,7 @@ export default class UserController {
   static async getReferralChildren(req: Request, res: Response) {
     try {
       const { userId } = req.params;
-      const referralChildren = await UserService.getReferralChildrenTaskCompleted(Number(userId));
+      const referralChildren = await UserService.getReferralChildrenTaskCompleted(userId);
 
       res.status(200).json(referralChildren);
     } catch (error:any) {
@@ -63,7 +63,7 @@ export default class UserController {
   static async getUserById(req: Request, res: Response) {
     try {
       const { userId } = req.params; // Get the userId from request params
-      const user = await UserService.getUserById(Number(userId));
+      const user = await UserService.getUserById(userId);
 
       if (!user) {
         return res.status(404).json({ message: "User not found" });
@@ -81,7 +81,7 @@ export default class UserController {
       const { userId } = req.params; // Get the userId from request params
       const { status } = req.body; // Get the new status from request body
 
-      const updatedUser = await UserService.updateUserStatus(Number(userId), status);
+      const updatedUser = await UserService.updateUserStatus(userId, status);
       
       if (!updatedUser) {
         return res.status(404).json({ message: "User not found" });
@@ -96,7 +96,7 @@ export default class UserController {
   static async deleteUserProfile(req: Request, res: Response){
     try {
       const { userId } = req.params; // Get the userId from request params
-      const user = await UserService.deleteUser(Number(userId));
+      const user = await UserService.deleteUser(userId);
 
       if (!user) {
         return res.status(404).json({ message: "User not found" });

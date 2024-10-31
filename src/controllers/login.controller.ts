@@ -4,20 +4,20 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 export const login = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const { userId, password } = req.body;
 
   try {
     // Check if user exists
-    const user:any = await User.findOne({ where: { email } });
+    const user:any = await User.findOne({ where: { userId } });
 
     if (!user) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ message: 'Invalid userId or password' });
     }
 
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ message: 'Invalid userId or password' });
     }
 
     // Generate JWT token

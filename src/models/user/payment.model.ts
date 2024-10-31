@@ -1,16 +1,15 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../../config/database';
-import User from './user.model'; // Ensure the import path is correct
 
 class Payment extends Model {
   public payId!: number;
-  public userId!: number;
+  public userId!: string; // Change to string to match users table
   public userName!: string;
   public earnWallet!: number;
   public depositWallet!: number;
   public referralEarning!: number;
   public selfInvestment!: number;
-  public levelEarning!: number; // Corrected from 'lavalEarning'
+  public levelEarning!: number;
   public aiEarning!: number;
   public royalty!: number;
   public totalWithdraw!: number;
@@ -21,8 +20,8 @@ class Payment extends Model {
   public totalAmount!: number;
   public plan!: string;
   public commission!: string;
-  public planStartDate!: string;
-  public planEndDate!: string;
+  public planStartDate!: Date; // Change to Date for better typing
+  public planEndDate!: Date; // Change to Date for better typing
   public status!: string;
   public filename?: string;
   public filepath?: string;
@@ -36,10 +35,10 @@ Payment.init({
     primaryKey: true,
   },
   userId: {
-    type: DataTypes.INTEGER.UNSIGNED,
+    type: DataTypes.STRING, // Changed from INTEGER.UNSIGNED to STRING
     allowNull: false,
     references: {
-      model: 'users', // This should refer to the correct table name in your DB
+      model: 'users', // Ensure this matches your users table
       key: 'userId',
     },
     onDelete: 'CASCADE',
@@ -50,7 +49,7 @@ Payment.init({
     allowNull: false,
   },
   earnWallet: {
-    type: DataTypes.DECIMAL(10, 2), // Use DECIMAL for better precision with money
+    type: DataTypes.DECIMAL(10, 2),
     allowNull: true,
     defaultValue: 0,
   },
@@ -69,7 +68,7 @@ Payment.init({
     allowNull: true,
     defaultValue: 0,
   },
-  levelEarning: { // Corrected name from lavalEarning to levelEarning
+  levelEarning: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: true,
     defaultValue: 0,
@@ -122,15 +121,15 @@ Payment.init({
     type: DataTypes.STRING,
     allowNull: true,
   },
-  planStartDate:{
+  planStartDate: {
     type: DataTypes.DATE,
     allowNull: false,
-    defaultValue: Date.now
+    defaultValue: DataTypes.NOW, // Use DataTypes.NOW for default
   },
-  planEndDate:{
+  planEndDate: {
     type: DataTypes.DATE,
     allowNull: false,
-    defaultValue: Date.now
+    defaultValue: DataTypes.NOW, // Use DataTypes.NOW for default
   },
   status: {
     type: DataTypes.STRING,

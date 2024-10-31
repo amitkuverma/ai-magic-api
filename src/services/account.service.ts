@@ -10,15 +10,15 @@ class AccountDetailsService {
     return AccountDetails.findAll();
   }
 
-  async getAccountDetailsById(id: number) {
+  async getAccountDetailsById(id: any) {
     return AccountDetails.findOne({ where: { userId: id } });
   }
 
-  async updateAccountDetails(id: number, data: any) {
+  async updateAccountDetails(id: any, data: any) {
     return AccountDetails.update(data, { where: { accId: id } });
   }
 
-  async deleteAccountDetails(id: number) {
+  async deleteAccountDetails(id: any) {
     return AccountDetails.destroy({ where: { accId: id } });
   }
 }
