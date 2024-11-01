@@ -32,7 +32,7 @@ transRouter.get('/transaction/', authenticateToken, TransactionController.getAll
  *       200:
  *         description: Transaction data.
  */
-transRouter.get('/transaction/:transId', authenticateToken, TransactionController.getOne);
+transRouter.get('/transaction/:transId', authenticateToken, TransactionController.getTransactionByTrancId);
 
 /**
  * @swagger
@@ -67,7 +67,7 @@ transRouter.put('/transaction/:transId', authenticateToken, TransactionControlle
 
 /**
  * @swagger
- * /api/transactions/{id}:
+ * /api/transaction/{id}:
  *   delete:
  *     summary: Delete a transaction by ID
  *     tags: [Transaction]

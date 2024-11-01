@@ -11,7 +11,7 @@ class TransactionController {
     }
   }
 
-  async getOne(req: Request, res: Response) {
+  async getTransactionByTrancId(req: Request, res: Response) {
     try {
       const transaction = await TransactionService.getTransactionById(parseInt(req.params.transId));
       if (!transaction) return res.status(404).json({ error: 'Transaction not found' });

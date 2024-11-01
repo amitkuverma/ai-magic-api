@@ -54,6 +54,10 @@ export default class UserService {
     return user;
   }
 
+  static async updateUser(userId: any, data: any) {   
+    return User.update(data, { where: { userId: userId } });
+  }
+  
   // Create a user with optional referral handling
   static async createUser(data: UserRegistrationData) {
     return await this.registerUserWithReferral(data);

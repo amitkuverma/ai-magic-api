@@ -52,6 +52,16 @@ class PaymentController {
     }
   }
 
+  async getPaymentsByPayId(req: Request, res: Response) {
+    const { payId } = req.params;
+    try {
+      const payments = await PaymentService.findPaymentById(payId);
+      res.status(200).json(payments);
+    } catch (error: any) {
+      res.status(500).json({ message: 'Failed to retrieve payments', error: error.message });
+    }
+  }
+
   // Retrieve all payments
   async getAllUserPayments(req: Request, res: Response) {
     try {
@@ -62,10 +72,10 @@ class PaymentController {
     }
   }
 
-  async deleteAccountDetails(req: Request, res: Response) {
+  async deletePaymentDetails(req: Request, res: Response) {
     try {
       await PaymentService.deletePayment(req.params.userId);
-      res.status(200).json({ message: 'Account details deleted' });
+      res.status(200).json({ message: 'Payment details deleted' });
     } catch (error) {
       res.status(500).json({ error: 'Unable to delete account details' });
     }

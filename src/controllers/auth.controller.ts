@@ -4,7 +4,6 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { sendEmail } from '../utils/email.service'; // Utility for sending emails
-import AuthService from '../services/auth.service';
 import { hashPassword } from '../utils/authUtils';
 
 
@@ -75,8 +74,8 @@ class AuthController {
       const resetTokenExpiry = Date.now() + 3600000; // Token valid for 1 hour
 
       // Update the user record with the reset token and expiry time
-      // user.resetToken = resetToken;
-      // user.resetTokenExpiry = resetTokenExpiry;
+      user.resetToken = resetToken;
+      user.resetTokenExpiry = resetTokenExpiry.toString();
       await user.save();
 
       // Create the reset link

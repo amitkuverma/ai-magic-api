@@ -48,7 +48,7 @@ authRouter.post('/login', AuthController.login);
 
 /**
  * @swagger
- * /forgot-password:
+ * /api/forgot-password:
  *   post:
  *     summary: Initiates a password reset
  *     description: Sends a password reset email with a token if the email is registered.
@@ -75,7 +75,7 @@ authRouter.post('/forgot-password', AuthController.forgotPassword);
 
 /**
  * @swagger
- * /reset-password:
+ * /api/reset-password:
  *   post:
  *     summary: Completes password reset with a new password
  *     description: Resets the user password if the provided token is valid.

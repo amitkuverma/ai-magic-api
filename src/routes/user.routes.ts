@@ -40,7 +40,7 @@ router.get('/users', authenticateToken, UserController.getAllUsers);
 
 /**
  * @openapi
- * /api/users/{userId}:
+ * /api/user/{userId}:
  *   get:
  *     summary: Get user by ID
  *     tags: [Users]
@@ -86,7 +86,7 @@ router.get('/user/:userId', authenticateToken, UserController.getUserById);
 
 /**
  * @openapi
- * /api/users/{userId}/status:
+ * /api/user/{userId}/status:
  *   put:
  *     summary: Update user status
  *     tags: [Users]
@@ -130,6 +130,54 @@ router.get('/user/:userId', authenticateToken, UserController.getUserById);
  *         description: Server error.
  */
 router.put('/user/:userId/status', authenticateToken, UserController.updateUserStatus);
+
+/**
+ * @openapi
+ * /api/user/{userId}:
+ *   put:
+ *     summary: Update user status
+ *     security:
+ *       - BearerAuth: []  # This adds the Bearer token requirement (LOCK)
+ *     description: Update the status of a user by their ID.
+ *     tags:
+ *      - Users
+ *     parameters:
+ *       - name: userId
+ *         in: path
+ *         required: true
+ *         description: ID of the user to update.
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 description: The new status of the user.
+ *     responses:
+ *       200:
+ *         description: User status updated.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   description: The user's ID.
+ *                 status:
+ *                   type: string
+ *                   description: The updated status.
+ *       404:
+ *         description: User not found.
+ *       500:
+ *         description: Server error.
+ */
+router.put('/user/:userId', UserController.updateUser);
 
 /**
  * @openapi

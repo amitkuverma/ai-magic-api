@@ -104,6 +104,22 @@ export default class UserController {
       res.status(500).json({ message: "Error updating user status", error: error.message });
     }
   }
+  static async updateUser(req: Request, res: Response) {
+    try {
+      const { userId } = req.params; // Get the userId from request params
+      const { status } = req.body; // Get the new status from request body
+
+      const updatedUser = await UserService.updateUser(userId, status);
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.status(200).json(updatedUser);
+    } catch (error:any) {
+      res.status(500).json({ message: "Error updating user status", error: error.message });
+    }
+  }
 
   static async deleteUserProfile(req: Request, res: Response){
     try {

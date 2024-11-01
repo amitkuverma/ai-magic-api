@@ -1,4 +1,3 @@
-import { where } from 'sequelize';
 import AccountDetails from '../models/user/account.model';
 
 class AccountDetailsService {
@@ -10,16 +9,20 @@ class AccountDetailsService {
     return AccountDetails.findAll();
   }
 
-  async getAccountDetailsById(id: any) {
-    return AccountDetails.findOne({ where: { userId: id } });
+  async getAccountDetailsById(accId: any) {
+    return AccountDetails.findByPk(accId);
   }
 
-  async updateAccountDetails(id: any, data: any) {
-    return AccountDetails.update(data, { where: { accId: id } });
+  async getAccountDetailsByuserId(userId: any) {
+    return AccountDetails.findOne({ where: { userId: userId } });
   }
 
-  async deleteAccountDetails(id: any) {
-    return AccountDetails.destroy({ where: { accId: id } });
+  async updateAccountDetails(accId: any, data: any) {
+    return AccountDetails.update(data, { where: { accId: accId } });
+  }
+
+  async deleteAccountDetails(accId: any) {
+    return AccountDetails.destroy({ where: { accId: accId } });
   }
 }
 

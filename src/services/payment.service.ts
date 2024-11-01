@@ -9,8 +9,8 @@ class PaymentService {
     return payment;
   }
 
-  async findPaymentById(id: any) {
-    const payment = await Payment.findByPk(id);
+  async findPaymentById(payId: any) {
+    const payment = await Payment.findByPk(payId);
     if (!payment) {
       throw new Error('User data not found in payment table');
     }
@@ -35,8 +35,8 @@ class PaymentService {
     return await payment.update(updateData);
   }
 
-  async deletePayment(id: any) {
-    return Payment.destroy({ where: { payId: id } });
+  async deletePayment(payId: any) {
+    return Payment.destroy({ where: { payId: payId } });
   }
 }
 

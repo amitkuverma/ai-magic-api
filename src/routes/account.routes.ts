@@ -19,7 +19,7 @@ const accRouter = Router();
  *           schema:
  *             type: object
  *             properties:
- *               userId:
+ *               accId:
  *                 type: integer
  *               bankName:
  *                 type: string
@@ -61,7 +61,7 @@ accRouter.post('/account', authenticateToken, AccountDetailsController.createAcc
  *               items:
  *                 type: object
  *                 properties:
- *                   userId:
+ *                   accId:
  *                     type: integer
  *                   bankName:
  *                     type: string
@@ -86,15 +86,15 @@ accRouter.get('/account', authenticateToken, AccountDetailsController.getAllAcco
 
 /**
  * @swagger
- * /api/account/{userId}:
+ * /api/account/{accId}:
  *   get:
- *     summary: Get account details by user ID
+ *     summary: Get account details by account ID
  *     tags: [AccountDetails]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: userId
+ *         name: accId
  *         schema:
  *           type: integer
  *         required: true
@@ -109,19 +109,46 @@ accRouter.get('/account', authenticateToken, AccountDetailsController.getAllAcco
  *       500:
  *         description: Internal server error
  */
-accRouter.get('/account/:userId', authenticateToken, AccountDetailsController.getAccountDetails);
+accRouter.get('/account/:accId', authenticateToken, AccountDetailsController.getAccountDetails);
 
 /**
  * @swagger
  * /api/account/{userId}:
- *   put:
- *     summary: Update account details by user ID
+ *   get:
+ *     summary: Get account details by user ID
  *     tags: [AccountDetails]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: userId
+ *         name: accId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: The user ID for which the account details are retrieved
+ *     responses:
+ *       200:
+ *         description: Account details retrieved successfully
+ *       404:
+ *         description: Account details not found
+ *       401:
+ *         description: Unauthorized - Invalid or missing authentication token
+ *       500:
+ *         description: Internal server error
+ */
+accRouter.get('/account/:userId', authenticateToken, AccountDetailsController.getAccountDetailUsinguserId);
+
+/**
+ * @swagger
+ * /api/account/{accId}:
+ *   put:
+ *     summary: Update account details by account ID
+ *     tags: [AccountDetails]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: accId
  *         schema:
  *           type: integer
  *         required: true
@@ -155,19 +182,19 @@ accRouter.get('/account/:userId', authenticateToken, AccountDetailsController.ge
  *       404:
  *         description: Account details not found
  */
-accRouter.put('/account/:userId', authenticateToken, AccountDetailsController.updateAccountDetails);
+accRouter.put('/account/:accId', authenticateToken, AccountDetailsController.updateAccountDetails);
 
 /**
  * @swagger
- * /api/account/{userId}:
+ * /api/account/{accId}:
  *   delete:
- *     summary: Delete account details by user ID
+ *     summary: Delete account details by account ID
  *     tags: [AccountDetails]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: userId
+ *         name: accId
  *         schema:
  *           type: integer
  *         required: true
@@ -182,6 +209,6 @@ accRouter.put('/account/:userId', authenticateToken, AccountDetailsController.up
  *       404:
  *         description: Account details not found
  */
-accRouter.delete('/account/:userId', authenticateToken, AccountDetailsController.deleteAccountDetails);
+accRouter.delete('/account/:accId', authenticateToken, AccountDetailsController.deleteAccountDetails);
 
 export default accRouter;

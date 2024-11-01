@@ -22,6 +22,8 @@ class User extends Model {
   public status!: string;
   public joiningDate!: Date;
   public activeDate!: Date;
+  public resetToken!: string;
+  public resetTokenExpiry!: string;
   public isAdmin!: boolean;
 }
 
@@ -123,6 +125,15 @@ User.init(
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: DataTypes.NOW,
+    },
+    resetToken: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: DataTypes.NOW,
+    },
+    resetTokenExpiry: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     isAdmin: {
       type: DataTypes.BOOLEAN,
