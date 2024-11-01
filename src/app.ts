@@ -66,7 +66,7 @@ async function updateDailyEarningsForAllUsers() {
             earnWallet: newEarnings,
             aiEarning: aiEarnings
           },
-          { where: { payId: user.payId } } // Update based on the primary key
+          { where: { payId: user.payId } }
         );
 
         await Transaction.create(
@@ -75,7 +75,7 @@ async function updateDailyEarningsForAllUsers() {
             userName: user.userName,
             transactionAmount: aiEarnings,
             status: 'ai'
-          } // Update based on the primary key
+          }
         );
 
         console.log(`Updated earnings for userId ${user.payId} to ${newEarnings}`);
