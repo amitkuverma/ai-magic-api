@@ -168,6 +168,22 @@ export default class UserService {
     return await fetchChain(initialUser);
   }
 
+  static async getUserParentChain(userId: any): Promise<User[]> {
+    const parents: User[] = [];
+  
+    let currentUser = await User.findByPk(userId);
+    while (currentUser && currentUser.parentUserId) {
+      parents.push(currentUser);
+      currentUser = await User.findByPk(currentUser.parentUserId);
+    }
+  
+    // Push the root user (who has no parent) if they exist
+    if (currentUser) {
+      parents.push(currentUser);
+    }
+  
+    return parents;
+  }
 
 
   // static async getUserReferralChainList(userId: any): Promise<{ user: User; referrals: any[] }> {

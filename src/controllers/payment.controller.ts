@@ -2,30 +2,6 @@ import { Request, Response } from 'express';
 import PaymentService from '../services/payment.service';
 
 class PaymentController {
-  // Upload receipt and update payment
-  async uploadReceipt(req: Request, res: Response) {
-    // try {
-      
-    //   const { id } = req.params;
-    //   const receiptPath = req.file?.path;
-    //   const type = req.body.type;
-
-    //   if (!receiptPath) {
-    //     return res.status(400).json({ message: 'Receipt file is required' });
-    //   }
-
-    //   const payment = await PaymentService.uploadReceipt(Number(id), receiptPath,  type);
-
-    //   return res.status(200).json({
-    //     message: 'Receipt uploaded successfully',
-    //     payment,
-    //   });
-    // } catch (error: any) {
-    //   console.error('Error uploading receipt:', error.message);
-    //   return res.status(500).json({ message: error.message });
-    // }
-  }
-
   // Create a new payment
   async createPayment(req: Request, res: Response) {
     try {
@@ -83,6 +59,15 @@ class PaymentController {
       res.status(200).json(payments);
     } catch (error: any) {
       res.status(500).json({ message: 'Failed to retrieve payments', error: error.message });
+    }
+  }
+
+  async deleteAccountDetails(req: Request, res: Response) {
+    try {
+      await PaymentService.deletePayment(req.params.userId);
+      res.status(200).json({ message: 'Account details deleted' });
+    } catch (error) {
+      res.status(500).json({ error: 'Unable to delete account details' });
     }
   }
 }

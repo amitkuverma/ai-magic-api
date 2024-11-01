@@ -5,10 +5,18 @@ const fileRouter = express.Router();
 
 /**
  * @swagger
+ * tags:
+ *   name: File
+ *   description: File management API
+ */
+
+/**
+ * @swagger
  * /api/upload:
  *   post:
  *     summary: Upload a file
  *     description: Upload a file to the server.
+ *     tags: [File]
  *     consumes:
  *       - multipart/form-data
  *     parameters:

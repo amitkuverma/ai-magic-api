@@ -34,6 +34,10 @@ class PaymentService {
 
     return await payment.update(updateData);
   }
+
+  async deletePayment(id: any) {
+    return Payment.destroy({ where: { payId: id } });
+  }
 }
 
 export default new PaymentService();
