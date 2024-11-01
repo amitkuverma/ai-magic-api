@@ -13,6 +13,7 @@ import cron from 'node-cron';
 import Payment from './models/user/payment.model';
 import chainRouter from './routes/chain.routes';
 import authRoutes from './routes/auth.routes';
+import Transaction from './models/user/transaction.model';
 
 const app: Application = express();
 
@@ -66,6 +67,15 @@ async function updateDailyEarningsForAllUsers() {
             aiEarning: aiEarnings
           },
           { where: { payId: user.payId } } // Update based on the primary key
+        );
+
+        await Transaction.create(
+          {
+            userId: user.userId,
+            userName: user.userName,
+            transactionAmount: aiEarnings,
+            status: 'ai'
+          } // Update based on the primary key
         );
 
         console.log(`Updated earnings for userId ${user.payId} to ${newEarnings}`);
