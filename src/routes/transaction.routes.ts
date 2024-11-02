@@ -36,6 +36,24 @@ transRouter.get('/transaction/:transId', authenticateToken, TransactionControlle
 
 /**
  * @swagger
+ * /api/transactions/user/{userId}:
+ *   get:
+ *     summary: Get a User by ID
+ *     tags: [Transaction]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         description: Numeric ID of the transaction to retrieve.
+ *     responses:
+ *       200:
+ *         description: Transaction data.
+ */
+transRouter.get('/transaction/user/:userId', authenticateToken, TransactionController.getTransactionByUserId);
+
+
+/**
+ * @swagger
  * /api/transactions:
  *   post:
  *     summary: Create a new transaction

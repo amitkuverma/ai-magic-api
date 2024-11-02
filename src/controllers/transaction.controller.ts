@@ -21,6 +21,16 @@ class TransactionController {
     }
   }
 
+  async getTransactionByUserId(req: Request, res: Response) {
+    try {
+      const transaction = await TransactionService.getTransactionByUserId(req.params.userId);
+      if (!transaction) return res.status(404).json({ error: 'Transaction not found' });
+      res.status(200).json(transaction);
+    } catch (error:any) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
   async getAll(req: Request, res: Response) {
     try {
       const transactions = await TransactionService.getAllTransactions();

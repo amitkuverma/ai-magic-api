@@ -5,8 +5,12 @@ class TransactionService {
     return Transaction.create(data);
   }
 
-  async getTransactionById(transId: number) {
-    return Transaction.findByPk(transId);
+  async getTransactionById(transId: any) {
+    return Transaction.findOne({ where: transId });
+  }
+
+  async getTransactionByUserId(userId: any) {
+    return Transaction.findAll({ where: userId });
   }
 
   async getAllTransactions() {
