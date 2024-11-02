@@ -6,11 +6,11 @@ class TransactionService {
   }
 
   async getTransactionById(transId: any) {
-    return Transaction.findOne({ where: transId });
+    return Transaction.findOne({ where: { transId: transId } });
   }
 
   async getTransactionByUserId(userId: any) {
-    return Transaction.findAll({ where: userId });
+    return Transaction.findAll({ where: { userId: userId } });
   }
 
   async getAllTransactions() {
