@@ -90,11 +90,11 @@ async function updateAIEarningsForAllUsers() {
           }
         );
 
-        console.log(`Updated earnings for userId ${user.payId} to ${newEarnings}`);
+        console.log(`AI earnings for userId ${user.payId} to ${newEarnings}`);
       }
     }
   } catch (error) {
-    console.error('Error updating daily earnings for all users:', error);
+    console.error('Error updating AI earnings for all users:', error);
   }
 }
 // Adjusted autoCreateDailyEarnings function
@@ -131,7 +131,7 @@ async function updateDailyEarningsForAllUsers() {
           }
         );
 
-        console.log(`Updated earnings for userId ${user.payId} to ${newEarnings}`);
+        console.log(`Daily earnings for userId ${user.payId} to ${newEarnings}`);
       }
     }
   } catch (error) {
