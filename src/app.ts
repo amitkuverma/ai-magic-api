@@ -81,12 +81,6 @@ async function updateAIEarningsForAllUsers() {
           },
           { where: { payId: user.payId } }
         );
-        console.log({
-          userId: user.userId,
-          userName: user.userName,
-          aiEarning: aiEarnings,
-          status: 'paid'
-        })
         await AiEarning.create(
           {
             userId: user.userId,
@@ -128,12 +122,6 @@ async function updateDailyEarningsForAllUsers() {
           },
           { where: { payId: user.payId } }
         );
-        console.log({
-          userId: user.userId,
-          userName: user.userName,
-          aiEarning: aiEarnings,
-          status: 'paid'
-        })
         await DailyEarning.create(
           {
             userId: user.userId,
