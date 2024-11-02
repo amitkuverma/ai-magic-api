@@ -18,59 +18,6 @@ export default class UserController {
       res.status(400).json({ message: error.message });
     }
   }
-  static async getReferralChain(req: Request, res: Response) {
-    try {
-      const { userId } = req.params; // Get the userId from request params
-      const referralChain = await UserService.getReferralChain(userId);
-
-      if (!referralChain.length) {
-        return res.status(404).json({ message: "No referral chain found" });
-      }
-
-      res.status(200).json(referralChain);
-    } catch (error:any) {
-      res.status(500).json({ message: "Error fetching referral chain", error: error.message });
-    }
-  }
-
-  static async getUserReferralChainList(req: Request, res: Response) {
-    try {
-      const { userId } = req.params; // Get the userId from request params
-      const referralChain = await UserService.getUserReferralChainList(userId);
-
-      if (!referralChain) {
-        return res.status(404).json({ message: "No referral chain found" });
-      }
-
-      res.status(200).json(referralChain);
-    } catch (error:any) {
-      res.status(500).json({ message: "Error fetching referral chain", error: error.message });
-    }
-  }
-
-    // Optional: API to get the referrals made by a user
-    static async getReferralParent(req: Request, res: Response) {
-      try {
-        const { userId } = req.params;
-        const referralChildren = await UserService.getUserParentChain(userId);
-  
-        res.status(200).json(referralChildren);
-      } catch (error:any) {
-        res.status(500).json({ message: "Error fetching referral children", error: error.message });
-      }
-    }
-
-  // Optional: API to get the referrals made by a user
-  static async getReferralChildren(req: Request, res: Response) {
-    try {
-      const { userId } = req.params;
-      const referralChildren = await UserService.getReferralChildrenTaskCompleted(userId);
-
-      res.status(200).json(referralChildren);
-    } catch (error:any) {
-      res.status(500).json({ message: "Error fetching referral children", error: error.message });
-    }
-  }
 
   static async getUserById(req: Request, res: Response) {
     try {
