@@ -41,9 +41,9 @@ app.get('/', (req, res) => {
 app.put('/api/ai-earnings', async (req, res) => {
   try {
     await updateAIEarningsForAllUsers();
-    res.status(200).json({ message: 'Daily earnings updated successfully' });
+    res.status(200).json({ message: 'Ai earnings updated successfully' });
   } catch (error) {
-    console.error('Error updating daily earnings:', error);
+    console.error('Error updating AI earnings:', error);
     res.status(500).json({ message: 'Error updating daily earnings' });
   }
 });
