@@ -5,13 +5,17 @@ import AccountDetails from './user/account.model';
 import Transaction from './user/transaction.model';
 import defineAssociationsDynamically from '../associations';
 import Coin from './user/coin.model';
+import AiEarning from './user/ai-earning.model';
+import DailyEarning from './user/daily-earning.model';
 
 const models = {
   User,
   Payment,
   AccountDetails,
   Transaction,
-  Coin
+  Coin,
+  AiEarning,
+  DailyEarning
 };
 
 const modelAssociations = {
@@ -53,6 +57,24 @@ const modelAssociations = {
     ]
   },
   Transaction: {
+    belongsTo: [
+      {
+        targetModel: 'User',
+        foreignKey: 'userId',
+        as: 'user' // Alias for the reverse relationship (user)
+      }
+    ]
+  },
+  AiEarning: {
+    belongsTo: [
+      {
+        targetModel: 'User',
+        foreignKey: 'userId',
+        as: 'user' // Alias for the reverse relationship (user)
+      }
+    ]
+  },
+  DailyEarning: {
     belongsTo: [
       {
         targetModel: 'User',

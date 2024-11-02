@@ -14,6 +14,9 @@ import Payment from './models/user/payment.model';
 import chainRouter from './routes/chain.routes';
 import authRoutes from './routes/auth.routes';
 import Transaction from './models/user/transaction.model';
+import AiEarning from './models/user/ai-earning.model';
+import aiRouter from './routes/aiEarning.routes';
+import dailyRouter from './routes/dailyEarning.routes';
 
 const app: Application = express();
 
@@ -23,7 +26,7 @@ app.use(corsMiddleware);
 
 // Routes
 app.use('/auth', authRoutes);
-app.use('/api', userRoutes, authRoutes, paymentRouter, accRouter, transRouter, coinRouter, fileRouter, chainRouter);
+app.use('/api', userRoutes, authRoutes, paymentRouter, accRouter, transRouter, coinRouter, fileRouter, chainRouter, aiRouter, dailyRouter);
 app.use('/uploads', express.static(path.join(__dirname, './uploads')));
 
 // Swagger Docs
@@ -68,13 +71,18 @@ async function updateDailyEarningsForAllUsers() {
           },
           { where: { payId: user.payId } }
         );
-
-        await Transaction.create(
+        console.log({
+          userId: user.userId,
+          userName: user.userName,
+          aiEarning: aiEarnings,
+          status: 'paid'
+        })
+        await AiEarning.create(
           {
             userId: user.userId,
             userName: user.userName,
-            transactionAmount: aiEarnings,
-            status: 'ai'
+            aiEarning: (user.selfInvestment * commission) / 100,
+            status: 'paid'
           }
         );
 
