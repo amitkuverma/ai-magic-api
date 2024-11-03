@@ -134,7 +134,7 @@ async function processReferralEarnings(referrals: any) {
 
     if (paymentDetails?.commission && paymentDetails.selfInvestment) {  // Proceed if payment details exist
       // Calculate additional earnings based on referral percentage
-      const additionalEarnings = (paymentDetails.commission || 0) * (referralPercentage / 100);
+      const additionalEarnings = (paymentDetails.selfInvestment || 0) * (referralPercentage / 100);
       const updatedEarnings = (paymentDetails.earnWallet || 0) + additionalEarnings;
 
       // Update user's earnWallet and dailyEarning in the Payment table
