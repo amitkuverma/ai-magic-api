@@ -44,7 +44,7 @@ DailyEarning.init({
 }, {
   sequelize,
   modelName: 'dailyEarning',
-  tableName: 'daily_arnings',
+  tableName: 'daily_earnings',
   timestamps: true, // For createdAt and updatedAt
 });
 

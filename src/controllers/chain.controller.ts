@@ -60,6 +60,17 @@ export default class ChainController {
         }
     }
 
+    static async getChildDataByParentId(req: Request, res: Response) {
+        try {
+            const { userId } = req.params;
+            const referralChildren = await ChainService.getChildDataByParentId(userId);
+
+            res.status(200).json(referralChildren);
+        } catch (error: any) {
+            res.status(500).json({ message: "Error fetching referral children", error: error.message });
+        }
+    }
+
     // Optional: API to get the referrals made by a user
     static async getReferralChildren(req: Request, res: Response) {
         try {

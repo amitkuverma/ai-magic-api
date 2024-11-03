@@ -2,6 +2,7 @@ import Payment from '../models/user/payment.model';
 import User from '../models/user/user.model';
 import { hashPassword } from '../utils/authUtils';
 import PaymentService from '../services/payment.service';
+import { where } from 'sequelize';
 
 interface UserRegistrationData {
     name: string;
@@ -106,6 +107,39 @@ export default class ChainService {
         return parents;
     }
 
+    static async getChildDataByParentId(userId: any): Promise<{ user: User; level: number; children: any[]; countAtLevel: number }[]> {
+        const result: { user: User; level: number; children: any[]; countAtLevel: number }[] = [];
+        const levelCounts: { [key: number]: number } = {}; // Store counts per level
+        
+        async function fetchChildUsers(userId: any, level: number): Promise<any> {
+            // Find direct children of the given userId
+            const childUsers = await User.findAll({ where: { parentUserId: userId } });
+            
+            // If there are users at this level, increment the count; otherwise, initialize it
+            levelCounts[level] = (levelCounts[level] || 0) + childUsers.length;
+            
+            const children = [];
+            for (const child of childUsers) {
+                // Recursively fetch children for each child
+                const childData = await fetchChildUsers(child.userId, level + 1);
+                children.push({
+                    user: child,
+                    level,
+                    children: childData.children,
+                    countAtLevel: levelCounts[level] // Store the count for this level
+                });
+            }
+            
+            return { children };
+        }
+        
+        // Start the recursive search from level 0
+        const topLevel = await fetchChildUsers(userId, 0);
+        result.push(...topLevel.children); // Populate result array with hierarchical data
+        
+        return result;
+    }
+    
 
     // static async getUserReferralChainList(userId: any): Promise<{ user: User; referrals: any[] }> {
     //   async function fetchChain(currentUser: User): Promise<{ user: User; referrals: any[] }> {

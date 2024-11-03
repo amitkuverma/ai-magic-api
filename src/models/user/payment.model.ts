@@ -19,7 +19,7 @@ class Payment extends Model {
   public starEarning!: number;
   public totalAmount!: number;
   public plan!: string;
-  public commission!: string;
+  public commission!: number;
   public planStartDate!: Date; // Change to Date for better typing
   public planEndDate!: Date; // Change to Date for better typing
   public status!: string;
@@ -49,67 +49,67 @@ Payment.init({
     allowNull: false,
   },
   earnWallet: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DECIMAL(20, 10),
     allowNull: true,
     defaultValue: 0,
   },
   depositWallet: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DECIMAL(20, 10),
     allowNull: true,
     defaultValue: 0,
   },
   referralEarning: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DECIMAL(20, 10),
     allowNull: true,
     defaultValue: 0,
   },
   selfInvestment: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DECIMAL(20, 10),
     allowNull: true,
     defaultValue: 0,
   },
   levelEarning: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DECIMAL(20, 10),
     allowNull: true,
     defaultValue: 0,
   },
   aiEarning: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DECIMAL(20, 10),
     allowNull: true,
     defaultValue: 0,
   },
   royalty: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DECIMAL(20, 10),
     allowNull: true,
     defaultValue: 0,
   },
   totalWithdraw: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DECIMAL(20, 10),
     allowNull: true,
     defaultValue: 0,
   },
   dailyLevelEarning: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DECIMAL(20, 10),
     allowNull: true,
     defaultValue: 0,
   },
   leadershipEarning: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DECIMAL(20, 10),
     allowNull: true,
     defaultValue: 0,
   },
   oneTimeEarning: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DECIMAL(20, 10),
     allowNull: true,
     defaultValue: 0,
   },
   starEarning: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DECIMAL(20, 10),
     allowNull: true,
     defaultValue: 0,
   },
   totalAmount: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DECIMAL(20, 10),
     allowNull: true,
     defaultValue: 0,
   },
@@ -118,8 +118,9 @@ Payment.init({
     allowNull: true,
   },
   commission: {
-    type: DataTypes.STRING,
+    type: DataTypes.DECIMAL(20, 10),
     allowNull: true,
+    defaultValue: 0,
   },
   planStartDate: {
     type: DataTypes.DATE,

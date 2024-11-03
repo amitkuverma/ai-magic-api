@@ -22,7 +22,7 @@ const chainRouter = Router();
  *       - in: path
  *         name: userId
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
  *         description: The ID of the user to get the referral chain for
  *     responses:
@@ -36,7 +36,7 @@ const chainRouter = Router();
  *                 type: object
  *                 properties:
  *                   id:
- *                     type: integer
+ *                     type: string
  *                     description: The user's ID
  *                   name:
  *                     type: string
@@ -58,6 +58,51 @@ chainRouter.get('/referral-chain/:userId', authenticateToken, ChainController.ge
 
 /**
  * @swagger
+ * /api/lebal-chain/{userId}:
+ *   get:
+ *     summary: Get the referral chain for a user
+ *     description: Retrieve the entire referral chain for a specific user, showing the hierarchy of who referred whom.
+ *     tags: [Chain]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the user to get the referral chain for
+ *     responses:
+ *       200:
+ *         description: The referral chain for the user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     description: The user's ID
+ *                   name:
+ *                     type: string
+ *                     description: The user's name
+ *                   email:
+ *                     type: string
+ *                     description: The user's email
+ *                   parentUserId:
+ *                     type: string
+ *                     description: The ID of the user who referred this user
+ *       404:
+ *         description: No referral chain found for the user
+ *       500:
+ *         description: Server error
+ */
+
+// API to get the referral chain for a user
+chainRouter.get('/lebal-chain/:userId', ChainController.getChildDataByParentId);
+
+/**
+ * @swagger
  * /api/referrals/{userId}:
  *   get:
  *     summary: Get the referral chain for a user
@@ -67,7 +112,7 @@ chainRouter.get('/referral-chain/:userId', authenticateToken, ChainController.ge
  *       - in: path
  *         name: userId
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
  *         description: The ID of the user to get the referral chain for
  *     responses:
@@ -112,7 +157,7 @@ chainRouter.get('/referrals/:userId', authenticateToken, ChainController.getUser
  *       - in: path
  *         name: userId
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
  *         description: The ID of the user to get referrals made by them
  *     responses:
@@ -157,7 +202,7 @@ chainRouter.get('/referral-parent/:userId', authenticateToken, ChainController.g
  *       - in: path
  *         name: userId
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
  *         description: The ID of the user to get referrals made by them
  *     responses:
@@ -203,7 +248,7 @@ chainRouter.get('/referral-children/:userId', authenticateToken, ChainController
  *       - in: path
  *         name: userId
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
  *         description: The ID of the user to get the referral chain for
  *     responses:

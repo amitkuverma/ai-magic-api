@@ -13,11 +13,15 @@ import cron from 'node-cron';
 import Payment from './models/user/payment.model';
 import chainRouter from './routes/chain.routes';
 import authRoutes from './routes/auth.routes';
-import Transaction from './models/user/transaction.model';
 import AiEarning from './models/user/ai-earning.model';
 import aiRouter from './routes/aiEarning.routes';
 import dailyRouter from './routes/dailyEarning.routes';
 import DailyEarning from './models/user/daily-earning.model';
+import UserService from './services/user.service';
+import PaymentService from './services/payment.service';
+import TransactionService from './services/transaction.service';
+import ChainService from './services/chain.service';
+import User from './models/user/user.model';
 
 const app: Application = express();
 
@@ -65,13 +69,13 @@ async function updateAIEarningsForAllUsers() {
 
     for (const user of existingUsers) {
       // Check if the user has a commission value
-      const commission = parseFloat(user.commission);
+      const commission = user.commission;
       if (commission) {
         console.log(commission)
         console.log((user.selfInvestment * commission) / 100)
         // Calculate the new earnings value
-        const newEarnings = parseFloat(user.earnWallet.toString()) + (user.selfInvestment * commission) / 100;
-        const aiEarnings = parseFloat(user.aiEarning.toString()) + (user.selfInvestment * commission) / 100;
+        const newEarnings = user.earnWallet + (user.selfInvestment * commission) / 100;
+        const aiEarnings = user.aiEarning + (user.selfInvestment * commission) / 100;
 
         // Update the earnWallet field for each user
         await Payment.update(
@@ -101,43 +105,83 @@ async function updateAIEarningsForAllUsers() {
 // Assuming Payment is a Sequelize model
 async function updateDailyEarningsForAllUsers() {
   try {
-    // Fetch all users from the Payment table
-    const existingUsers = await Payment.findAll();
+    // Fetch all users from the User table
+    const allUsers = await User.findAll();
 
-    for (const user of existingUsers) {
-      // Check if the user has a commission value
-      const commission = parseFloat(user.commission);
-      if (commission) {
-        console.log(commission)
-        console.log((user.selfInvestment * commission) / 100)
-        // Calculate the new earnings value
-        const newEarnings = parseFloat(user.earnWallet.toString()) + (user.selfInvestment * commission) / 100;
-        const aiEarnings = parseFloat(user.aiEarning.toString()) + (user.selfInvestment * commission) / 100;
-
-        // Update the earnWallet field for each user
-        await Payment.update(
-          {
-            earnWallet: newEarnings,
-            aiEarning: aiEarnings
-          },
-          { where: { payId: user.payId } }
-        );
-        await DailyEarning.create(
-          {
-            userId: user.userId,
-            userName: user.userName,
-            aiEarning: (user.selfInvestment * commission) / 100,
-            status: 'paid'
-          }
-        );
-
-        console.log(`Daily earnings for userId ${user.payId} to ${newEarnings}`);
+    for (const user of allUsers) {
+      // Fetch the user's referral chain
+      const userReferrals = await ChainService.getUserParentChain(user.userId);
+      const removingSelectedUserReferrals = userReferrals.filter(item=>item.userId !== user.userId);
+      console.log(removingSelectedUserReferrals);
+      
+      if (removingSelectedUserReferrals.length > 0) {
+        await processReferralEarnings(userReferrals);
       }
     }
   } catch (error) {
     console.error('Error updating daily earnings for all users:', error);
   }
 }
+
+async function processReferralEarnings(referrals: any) {
+  for (let i = 0; i < referrals.length; i++) {
+    const referral = referrals[i];
+    const level = i + 1;  // Determine the referral level (1-based index)
+    const referralPercentage = getReferralPercentage(level);  // Get percentage based on level
+
+    // Fetch existing payment details
+    const paymentDetails = await Payment.findOne({ where: { userId: referral.userId } });
+
+    if (paymentDetails?.commission && paymentDetails.selfInvestment) {  // Proceed if payment details exist
+      // Calculate additional earnings based on referral percentage
+      const additionalEarnings = (paymentDetails.commission || 0) * (referralPercentage / 100);
+      const updatedEarnings = (paymentDetails.earnWallet || 0) + additionalEarnings;
+
+      // Update user's earnWallet and dailyEarning in the Payment table
+      await Payment.update(
+        {
+          earnWallet: updatedEarnings,
+          dailyEarning: additionalEarnings
+        },
+        { where: { payId: paymentDetails.payId } }
+      );
+
+      // Create a record in the DailyEarning table
+      await DailyEarning.create({
+        userId: referral.userId,
+        userName: referral.name,
+        dailyEarning: additionalEarnings,
+        status: 'paid'
+      });
+
+      console.log(`Updated earnings for referral level ${level} of userId ${referral.userId}: ${updatedEarnings}`);
+    }
+  }
+}
+
+
+// Function to determine percentage based on referral level
+function getReferralPercentage(level: number) {
+  switch (level) {
+    case 1:
+      return 3;
+    case 2:
+      return 2;
+    case 3:
+    case 4:
+    case 5:
+      return 1;
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 10:
+      return 0.5;
+    default:
+      return 0;
+  }
+}
+
 
 
 // Schedule the auto-increment function to run daily at 1 AM
