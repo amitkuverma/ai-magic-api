@@ -6,6 +6,8 @@ class DailyEarning extends Model {
   public dailyId!: number;
   public userId!: string; // Change to string if userId is VARCHAR in users
   public userName!: string;
+  public receiverId!: string; 
+  public receiverName!: string;
   public dailyEarning!: string;
   public status!: string;
 }
@@ -28,6 +30,14 @@ DailyEarning.init({
     onUpdate: 'CASCADE',
   },
   userName: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  receiverId: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  receiverName: {
     type: DataTypes.STRING,
     allowNull: false,
   },

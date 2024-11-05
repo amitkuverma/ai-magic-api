@@ -70,37 +70,42 @@ async function updateAIEarningsForAllUsers() {
     for (const user of existingUsers) {
       // Check if the user has a commission value
       const commission = user.commission;
-      if (commission) {
-        console.log(commission)
-        console.log((user.selfInvestment * commission) / 100)
-        // Calculate the new earnings value
-        const newEarnings = user.earnWallet + (user.selfInvestment * commission) / 100;
-        const aiEarnings = user.aiEarning + (user.selfInvestment * commission) / 100;
+      if (commission > 0 && user.selfInvestment > 0) {
+        console.log('Commission:', commission);
+        console.log('Self Investment:', user.selfInvestment);
+
+        const newEarnWallet = user.earnWallet + user.selfInvestment * commission / 100;
+        const newAiEarnings = user.aiEarning + user.selfInvestment * commission / 100;
+
+        console.log('Updated earnWallet:', newEarnWallet);
 
         // Update the earnWallet field for each user
         await Payment.update(
           {
-            earnWallet: newEarnings,
-            aiEarning: aiEarnings
+            earnWallet: newEarnWallet,
+            aiEarning: newAiEarnings
           },
           { where: { payId: user.payId } }
         );
-        await AiEarning.create(
-          {
-            userId: user.userId,
-            userName: user.userName,
-            aiEarning: (user.selfInvestment * commission) / 100,
-            status: 'paid'
-          }
-        );
 
-        console.log(`AI earnings for userId ${user.payId} to ${newEarnings}`);
+        // Record the AI earning
+        await AiEarning.create({
+          userId: user.userId,
+          userName: user.userName,
+          receiverId: user.userId,
+          receiverName: user.userName,
+          aiEarning: user.selfInvestment * commission / 100,
+          status: 'paid'
+        });
+
+        console.log(`AI earnings for userId ${user.payId} updated.`);
       }
     }
   } catch (error) {
     console.error('Error updating AI earnings for all users:', error);
   }
 }
+
 // Adjusted autoCreateDailyEarnings function
 // Assuming Payment is a Sequelize model
 async function updateDailyEarningsForAllUsers() {
@@ -111,11 +116,11 @@ async function updateDailyEarningsForAllUsers() {
     for (const user of allUsers) {
       // Fetch the user's referral chain
       const userReferrals = await ChainService.getUserParentChain(user.userId);
-      const removingSelectedUserReferrals = userReferrals.filter(item=>item.userId !== user.userId);
+      const removingSelectedUserReferrals = userReferrals.filter(item => item.userId !== user.userId);
       console.log(removingSelectedUserReferrals);
-      
+
       if (removingSelectedUserReferrals.length > 0) {
-        await processReferralEarnings(userReferrals);
+        await processReferralEarnings(userReferrals, user);
       }
     }
   } catch (error) {
@@ -123,7 +128,7 @@ async function updateDailyEarningsForAllUsers() {
   }
 }
 
-async function processReferralEarnings(referrals: any) {
+async function processReferralEarnings(referrals: any, selectedUser: any) {
   for (let i = 0; i < referrals.length; i++) {
     const referral = referrals[i];
     const level = i + 1;  // Determine the referral level (1-based index)
@@ -134,7 +139,7 @@ async function processReferralEarnings(referrals: any) {
 
     if (paymentDetails?.commission && paymentDetails.selfInvestment) {  // Proceed if payment details exist
       // Calculate additional earnings based on referral percentage
-      const additionalEarnings = (paymentDetails.commission || 0) * (referralPercentage / 100);
+      const additionalEarnings = (paymentDetails.selfInvestment || 0) * (referralPercentage / 100);
       const updatedEarnings = (paymentDetails.earnWallet || 0) + additionalEarnings;
 
       // Update user's earnWallet and dailyEarning in the Payment table
@@ -150,6 +155,8 @@ async function processReferralEarnings(referrals: any) {
       await DailyEarning.create({
         userId: referral.userId,
         userName: referral.name,
+        receiverId: selectedUser.userId,
+        receiverName: selectedUser.name,
         dailyEarning: additionalEarnings,
         status: 'paid'
       });
