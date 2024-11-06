@@ -22,6 +22,8 @@ import PaymentService from './services/payment.service';
 import TransactionService from './services/transaction.service';
 import ChainService from './services/chain.service';
 import User from './models/user/user.model';
+import Transaction from './models/user/transaction.model';
+const { Op } = require('sequelize');
 
 const app: Application = express();
 
@@ -111,16 +113,23 @@ async function updateAIEarningsForAllUsers() {
 async function updateDailyEarningsForAllUsers() {
   try {
     // Fetch all users from the User table
-    const allUsers = await User.findAll();
+    const allUsers = await Transaction.findAll({
+      where: {
+        paymentType: 'trade',
+        status: 'completed'
+      }
+    });
 
     for (const user of allUsers) {
       // Fetch the user's referral chain
       const userReferrals = await ChainService.getUserParentChain(user.userId);
+      console.log(userReferrals);
       const removingSelectedUserReferrals = userReferrals.filter(item => item.userId !== user.userId);
+
       console.log(removingSelectedUserReferrals);
 
       if (removingSelectedUserReferrals.length > 0) {
-        await processReferralEarnings(userReferrals, user);
+        await processReferralEarnings(removingSelectedUserReferrals, user);
       }
     }
   } catch (error) {
@@ -139,14 +148,16 @@ async function processReferralEarnings(referrals: any, selectedUser: any) {
 
     if (paymentDetails?.commission && paymentDetails.selfInvestment) {  // Proceed if payment details exist
       // Calculate additional earnings based on referral percentage
-      const additionalEarnings = (paymentDetails.selfInvestment || 0) * (referralPercentage / 100);
+      const additionalEarnings = (selectedUser.transactionId || 0) * (referralPercentage / 100);
+      //const additionalEarnings = (paymentDetails.aiEarning || 0) * (referralPercentage / 100);
       const updatedEarnings = (paymentDetails.earnWallet || 0) + additionalEarnings;
+      const updatedDailyEarnings = (paymentDetails.dailyLevelEarning || 0) + additionalEarnings;
 
       // Update user's earnWallet and dailyEarning in the Payment table
       await Payment.update(
         {
           earnWallet: updatedEarnings,
-          dailyEarning: additionalEarnings
+          dailyLevelEarning: updatedDailyEarnings
         },
         { where: { payId: paymentDetails.payId } }
       );
@@ -156,7 +167,7 @@ async function processReferralEarnings(referrals: any, selectedUser: any) {
         userId: referral.userId,
         userName: referral.name,
         receiverId: selectedUser.userId,
-        receiverName: selectedUser.name,
+        receiverName: selectedUser.userName,
         dailyEarning: additionalEarnings,
         status: 'paid'
       });
