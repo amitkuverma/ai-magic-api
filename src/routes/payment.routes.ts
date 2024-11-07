@@ -164,7 +164,7 @@ paymentRouter.post('/payment', authenticateToken, PaymentController.createPaymen
 
 /**
  * @swagger
- * /api/payment/{userId}:
+ * /api/payment/{payId}:
  *   put:
  *     summary: Update an existing payment
  *     tags: [Payments]
@@ -172,7 +172,7 @@ paymentRouter.post('/payment', authenticateToken, PaymentController.createPaymen
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: userId
+ *         name: payId
  *         schema:
  *           type: integer
  *         required: true
@@ -202,7 +202,7 @@ paymentRouter.post('/payment', authenticateToken, PaymentController.createPaymen
  *       500:
  *         description: Failed to update payment
  */
-paymentRouter.put('/payment/:userId', authenticateToken, PaymentController.updatePayment);
+paymentRouter.put('/payment/:payId', authenticateToken, PaymentController.updatePayment);
 
 /**
  * @swagger

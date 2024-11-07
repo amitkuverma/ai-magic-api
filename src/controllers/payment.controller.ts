@@ -20,9 +20,9 @@ class PaymentController {
   // Update an existing payment
   async updatePayment(req: Request, res: Response) {
     try {
-      const { userId } = req.params;
+      const { payId } = req.params;
       // Ensure that the payment exists before attempting to update
-      const existingPayment = await PaymentService.findPaymentById(userId);
+      const existingPayment = await PaymentService.findPaymentById(payId);
       if (!existingPayment) {
         return res.status(404).json({
           message: 'Payment not found for this user. Use create endpoint instead.',
