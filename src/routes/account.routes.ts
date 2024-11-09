@@ -113,7 +113,7 @@ accRouter.get('/account/:accId', authenticateToken, AccountDetailsController.get
 
 /**
  * @swagger
- * /api/account/{userId}:
+ * /api/account/user/{userId}:
  *   get:
  *     summary: Get account details by user ID
  *     tags: [AccountDetails]
@@ -121,9 +121,9 @@ accRouter.get('/account/:accId', authenticateToken, AccountDetailsController.get
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: accId
+ *         name: userId
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
  *         description: The user ID for which the account details are retrieved
  *     responses:
@@ -136,7 +136,7 @@ accRouter.get('/account/:accId', authenticateToken, AccountDetailsController.get
  *       500:
  *         description: Internal server error
  */
-accRouter.get('/account/:userId', authenticateToken, AccountDetailsController.getAccountDetailUsinguserId);
+accRouter.get('/account/user/:userId', authenticateToken, AccountDetailsController.getAccountDetailUsinguserId);
 
 /**
  * @swagger
